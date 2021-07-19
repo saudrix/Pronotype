@@ -1,18 +1,8 @@
 package Objects;
 
-public abstract class EditableObject implements ISelectable{
+public abstract class EditableObject implements ISelectable, IEditable{
+    String name;
 
-    boolean isSelected;
+    EditableObject(String name){}
 
-    @Override
-    public ISelectable SetActive() {
-
-
-        return this;
-    }
-
-    @Override
-    public void Deactivate(){
-
-    }
 }

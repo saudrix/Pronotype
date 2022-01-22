@@ -6,7 +6,7 @@ public class NumberProperty implements IProperty{
     boolean isEditable = true;
     private double value = 0;
 
-    NumberProperty(String name, double value){
+    public NumberProperty(String name, double value){
         this.name = name;
         this.value = value;
     }

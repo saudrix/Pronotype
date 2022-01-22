@@ -1,9 +1,12 @@
 package Views;
 
+import Objects.myScene;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -18,10 +21,11 @@ public class GUI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("Pronotype");
-        stage.setWidth(400);
-        stage.setHeight(400);
+        stage.setMaximized(true);
+        //stage.setWidth(400);
+        //stage.setHeight(400);
 
-        VBox root = new VBox();
+        Pane root = new Pane();
         Scene scene = new Scene(root);
 
         Label test = new Label("test");
@@ -41,6 +45,14 @@ public class GUI extends Application {
         prevWin.setTitle("Preview");
         prevWin.setWidth(800);
         prevWin.setHeight(400);*/
+        myScene testScene = new myScene(root);
+        Button testButton = new Button("addSquare");
+        root.getChildren().add(testButton);
+
+        testButton.setOnAction(value -> {
+            testScene.Add("rec");
+        });
+        //testButton.setOnMousePressed(event -> testScene.Add)("rec");
 
         //prevWin.show();
     }

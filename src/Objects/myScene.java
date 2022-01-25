@@ -18,8 +18,10 @@ public class myScene {
     EditableObject currentActive;
 
     public void setCurrentActive(EditableObject obj){
+        if(this.currentActive != null) this.currentActive.Deactivate();
         this.currentActive = obj;
         this.onActiveChange();
+        System.out.println(currentActive);
     }
 
     public EditableObject getCurrentActive(){return  this.currentActive;}

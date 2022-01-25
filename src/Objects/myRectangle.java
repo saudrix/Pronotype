@@ -8,14 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.event.EventHandler;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 
-public class myRectangle extends EditableObject{
+public class myRectangle extends EditableObject {
 
     NumberProperty x = new NumberProperty("xPosition",0);
     NumberProperty y = new NumberProperty("yPosition", 0);
@@ -27,6 +31,9 @@ public class myRectangle extends EditableObject{
     boolean isActive = false;
     Pane parent;
     myScene sceneParent;
+
+    double orgSceneX, orgSceneY;
+    double orgTranslateX, orgTranslateY;
 
     myRectangle(String name,String x, String y, String width, String height, Pane pane,myScene parentActiveRef){
         super(name);
@@ -43,29 +50,55 @@ public class myRectangle extends EditableObject{
         this.parent = pane;
         this.sceneParent = parentActiveRef;
 
-        rect = new Rectangle((int)(double)this.x.getValue(), (int)(double)this.y.getValue(), (int)(double)this.width.getValue(), (int)(double)this.height.getValue());
-        rect.setFill(Color.RED);
-        rect.setOnMouseClicked(mouseEvent -> {this.handleClick(mouseEvent);});
+        this.rect = new Rectangle((int)(double)this.x.getValue(), (int)(double)this.y.getValue(), (int)(double)this.width.getValue(), (int)(double)this.height.getValue());
+        this.rect.setFill(Color.RED);
+        this.rect.setOnMousePressed(mouseEvent -> {this.handleClickDown(mouseEvent);});
+        this.rect.setOnMouseReleased(mouseEvent -> {this.handleClickUp(mouseEvent);});
+        //rect.setOnDragDetected(this::startDrag); // même résultat differentes écritures
+        this.rect.setOnMouseDragged(mouseEvent -> {this.startDrag(mouseEvent);});
+        this.rect.setOnDragDropped(this::stopDrag);
     }
 
-    void handleClick(MouseEvent mouseEvent){
-        System.out.println(mouseEvent);
-        EditableObject obj = this.sceneParent.getCurrentActive();
-        if(obj != null )obj.Deactivate();
+    void handleClickDown(MouseEvent mouseEvent){
+        System.out.println("mouse down event");
+        orgSceneX = mouseEvent.getSceneX();
+        orgSceneY = mouseEvent.getSceneY();
+        orgTranslateX = ((Rectangle)(mouseEvent.getSource())).getTranslateX();
+        orgTranslateY = ((Rectangle) (mouseEvent.getSource())).getTranslateY();
 
-        this.sceneParent.setCurrentActive((EditableObject) this.SetActive());
-        this.SetActive();
+        if(!isActive){
+            this.SetActive();
+            this.sceneParent.setCurrentActive(this);
+        }
+    }
+
+    void handleClickUp(MouseEvent mouseEvent){
+        this.x.setValue(Double.toString(this.rect.getX()));
+        this.y.setValue(Double.toString(this.rect.getY()));
+    }
+
+    void startDrag(MouseEvent mouseEvent){
+        double offsetX = mouseEvent.getSceneX() - orgSceneX;
+        double offsetY = mouseEvent.getSceneY() - orgSceneY;
+        double newTranslateX = orgTranslateX + offsetX;
+        double newTranslateY = orgTranslateY + offsetY;
+
+        ((Rectangle) (mouseEvent.getSource())).setTranslateX(newTranslateX);  //transform the object
+        ((Rectangle) (mouseEvent.getSource())).setTranslateY(newTranslateY);
+    };
+
+    private void stopDrag(DragEvent dragEvent) {
+        System.out.println("drag stopped");
     }
 
     @Override
     public void Draw(){
-        System.out.println(this.x.getValue());
-        System.out.println(this.y.getValue());
-        System.out.println(this.width.getValue());
-        System.out.println(this.height.getValue());
         //parent.getChildren().add(rect);
         if (this.isActive){
             this.rect.setStroke(Color.BLACK);
+        }
+        else{
+            this.rect.setStroke(null);
         }
     }
 
